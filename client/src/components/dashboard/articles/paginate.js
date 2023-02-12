@@ -1,4 +1,4 @@
-import { Table, Pagination } from "react-bootstrap";
+import { Table, Pagination, Button } from "react-bootstrap";
 import { Loader } from "../../../utils/tools";
 import Moment from 'react-moment';
 
@@ -10,11 +10,15 @@ const PaginateComponent = ({
     handleStatusChange,
     handleShow
 }) => {
+
+   
+
     return (
         <> 
             { articles && articles.docs ?
                 <>
-                    <Table striped bordered hover>
+
+                    <Table striped bordered hover >
                         <thead>
                             <tr>
                                 <th>Created</th>

@@ -150,6 +150,20 @@ color: #525252;
   } 
 }
 
+/*/////////////  GOOGLE BUTTON /////////*/
+.loginButton{
+  width: 250px;
+  margin: 0 auto;
+  margin-top: 15px;
+  padding: 10px 30px;
+  border-radius: 5px;
+  color: white;
+}
+
+.google{
+  background-color: #df4930;
+}
+
 /*////////// dashboard /////////*/
 
 .adminLayout {
@@ -277,6 +291,12 @@ margin-top: 20px;
 .articles_table .status_btn:hover{ 
   background: #ffd24c;
   color: white !important;
+}
+
+.centerGoogleLogin {
+  margin: auto;
+  width: 50%;
+  padding: 10px;
 }
 
 /* .articles_table .table-striped>tbody>tr:nth-of-type(odd)>* {

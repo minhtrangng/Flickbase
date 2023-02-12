@@ -20,7 +20,8 @@ import AuthGuard from './hoc/authGuard';
 import DashboardMain from './components/dashboard/main';
 import AddArticles from './components/dashboard/articles/edit.add/add';
 import EditArticles from './components/dashboard/articles/edit.add/edit';
-
+import GoogleAuth from './components/auth/google.auth';
+import AdminCategories from './components/dashboard/categories';
 
 
 const Router = () => {
@@ -58,12 +59,16 @@ const Router = () => {
                 <Route path='articles/add' element={<AddArticles/>}/>
                 {/* The name of params in the URL and the name when we use later to get the params value muss be identical, otherwise, it won't work */}
                 <Route path='articles/edit/:articleID' element={<EditArticles/>}/>
+
+                <Route path='categories' element={<AdminCategories/>}/>
+
               </Route>
 
               <Route path='/verification' element={<AccountVerification/>}/>
               <Route path='/articles/article/:articleID' element={<Article/>}/>
               <Route path='/auth' element={<Auth/>}/>
               <Route path='/' element={<Home/>}/>
+              <Route path='/auth/google' element={<GoogleAuth/>}></Route>
           </Routes>
         </MainLayout>
       </>  

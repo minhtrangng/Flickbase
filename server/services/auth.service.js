@@ -56,9 +56,27 @@ const signInWithEmailAndPassword = async(email, password) => {
     }
 }
 
+// Verify the user logged in with Google account, if true => save the name and the email in the DB
+const logInWithGoggle = async(name, email) => {
+    try{
+        if(await User.emailCheck(email)){
+            throw new ApiError(httpStatus.BAD_REQUEST, 'Sorry, email has been registered!');
+        }
+        const user = new User({
+            email,
+            name
+        });
+        await user.save();
+        return user;
+    }
+    catch(err) {
+        throw err;
+    }
+}
 
 module.exports = {
     createUser,
     genAuthToken,
-    signInWithEmailAndPassword
+    signInWithEmailAndPassword,
+    logInWithGoggle
 }

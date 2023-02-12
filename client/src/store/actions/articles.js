@@ -3,7 +3,10 @@ import axios from 'axios';
 
 import { errorGlobal, successGlobal } from '../reducers/notifications';
 
+import { updateCategories } from '../reducers/articles';
+
 import { getAuthHeader, removeTokenCookie } from '../../utils/tools';
+
 
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
@@ -74,6 +77,29 @@ export const getPaginateArticles = createAsyncThunk(
     }
 )
 
+// GET EXPORT ARTICLES
+export const getExportArticle = createAsyncThunk(
+    'articles/getexportarticles',
+    async({page=1, limit=100, keywords=''}, {dispatch}) => {
+        try{
+            const request = await axios.post(`/api/articles/admin/paginate`, {
+                page,
+                limit,
+                keywords
+            }, getAuthHeader());
+
+            // Data HIER exportieren
+            // dispatch(exportData())
+
+            return request.data;
+        }
+        catch(err){
+            dispatch(errorGlobal(err.response.data.message))
+            throw err;
+        }
+    }
+)
+
 // CHANGE ARTICLE STATUS
 export const changeStatusArticle = createAsyncThunk(
     'articles/changestatusarticle',
@@ -126,12 +152,13 @@ export const homeLoadMore = createAsyncThunk(
     'articles/homeloadmorearticle',
     async(sort, {dispatch, getState}) => {
         try{
+            // console.log(dispatch);
             const articles = await axios.post(`/api/articles/all`, sort);
             const state = getState().articles.articles;
 
             const prevState = [...state];
             const newState = [...prevState, ...articles.data];
-
+            
             return { newState, sort }
         }
         catch(err){
@@ -149,6 +176,43 @@ export const getArticleContent = createAsyncThunk(
             // console.log(articleID)
             const article = await axios.get(`/api/articles/users/article/${articleID}`)
             return article.data;
+        }
+        catch(err){
+            dispatch(errorGlobal(err.response.data.message))
+            throw err;
+        }
+    }
+)
+
+// GET CATEGORY
+export const getCategories = createAsyncThunk(
+    'articles/getcategories',
+    async(obj, {dispatch}) => {
+        try{
+            const request = await axios.get(`/api/articles/categories`, getAuthHeader())
+            return request.data
+        }
+        catch(err){
+            dispatch(errorGlobal(err.response.data.message))
+            throw err;
+        }
+    }
+)
+
+// ADD CATEGORY
+export const addCategories = createAsyncThunk(
+    'articles/addcategories',
+    async(data, {dispatch, getState}) => {
+        try{
+            const category = await axios.post(`/api/articles/categories`, data, getAuthHeader());
+            const state = getState().articles.categories;
+            
+            const prevState = [...state];
+            const newState = [...prevState, category.data]
+
+            dispatch(updateCategories(newState))
+            dispatch(successGlobal('Category created!!'));
+            return newState;
         }
         catch(err){
             dispatch(errorGlobal(err.response.data.message))

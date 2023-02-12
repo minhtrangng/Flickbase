@@ -44,6 +44,21 @@ export const signinUser = createAsyncThunk(
     }
 )
 
+// export const chooseGoogleUser = createAsyncThunk(
+//     'users/chooseGoogleUser',
+//     async({dispatch}) => {
+//         try{
+//             const request =  await axios.get(`/api/auth/google`);
+//             dispatch(successGlobal('Welcome!'))
+//             console.log(request.statusText())
+//             return request.statusText();
+//         }
+//         catch(error) {
+//             dispatch(errorGlobal(error.response.data.message))
+//         }
+//     }
+// )
+
 export const isAuth = createAsyncThunk(
     'users/isauth',
     async() => {

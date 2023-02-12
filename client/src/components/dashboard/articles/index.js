@@ -1,12 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { AdminTitle } from "../../../utils/tools";
 
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
-import { getPaginateArticles, changeStatusArticle, removeArticle } from "../../../store/actions/articles";
+import { getPaginateArticles, changeStatusArticle, removeArticle, getExportArticle } from "../../../store/actions/articles";
 import PaginateComponent from "./paginate";
+
+
 
 import  {
     Button,
@@ -21,12 +23,29 @@ import { LinkContainer } from 'react-router-bootstrap'
 
 const AdminArticles = () => {
 
+    const user = useSelector(state => state.users.data);
+
     const articles = useSelector(state => state.articles);
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
     const [removeAlert, setRemoveAlert] = useState(false);
     const [toRemove, setToRemove] = useState(null);
+
+    const JSONdata = [
+        {
+            name: "Person1",
+            age: 12
+        },
+        {
+            name: "Person2",
+            age: 23
+        },
+        {
+            name: "Person3",
+            age: 20
+        }
+    ]
 
     const handleClose = () => {
         setRemoveAlert(false);
@@ -36,6 +55,39 @@ const AdminArticles = () => {
         setToRemove(id);
         setRemoveAlert(true);
     }
+
+    // GET DATA TO BE EXPORTED
+    const exportData = () => {
+        
+
+        if(articles && articles.exportingArticles) {
+            console.log(articles.exportingArticles);
+            const filename = "data.json";
+            const data = new Blob([JSON.stringify(articles.exportingArticles)], {type: "text/json"});
+            const jsonURL = window.URL.createObjectURL(data);
+            const link = document.createElement("a");
+            document.body.appendChild(link);
+            link.href =jsonURL;
+            link.setAttribute("download", filename);
+            link.click();
+            document.body.removeChild(link)
+        }
+    }
+        
+        
+        
+        
+
+        // THIS CODE SNIPET WORKS
+        // const filename = "data.json";
+        // const data = new Blob([JSON.stringify(JSONdata)], {type: "text/json"});
+        // const jsonURL = window.URL.createObjectURL(data);
+        // const link = document.createElement("a");
+        // document.body.appendChild(link);
+        // link.href =jsonURL;
+        // link.setAttribute("download", filename);
+        // link.click();
+        // document.body.removeChild(link)
 
  
 
@@ -80,7 +132,10 @@ const AdminArticles = () => {
     useEffect(()=> {
         // DISPATCH
         dispatch(getPaginateArticles({}))
+        dispatch(getExportArticle({}))
     }, [])
+
+    
 
     return(
         <>
@@ -106,6 +161,16 @@ const AdminArticles = () => {
 
                 </ButtonToolbar>
 
+                
+
+                <Button
+                    className="mb-3"
+                    color='secondary'
+                    onClick={exportData}
+                >
+                    Export Articles
+                </Button>
+        
                 {/* PAGINATION */}
                 <>  
                     <PaginateComponent

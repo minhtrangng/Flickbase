@@ -36,7 +36,7 @@ export const showToast = (type, msg) => {
 export const getTokenCookie = () => cookie.load('x-access-token');
 export const removeTokenCookie = () => cookie.remove('x-access-token', {path: '/'});
 export const getAuthHeader = () => {
-    console.log('Token: ', getTokenCookie());
+    // console.log('Token: ', getTokenCookie());
     return { headers: {'Authorization': `Bearer ${getTokenCookie()}`}};
 }
 

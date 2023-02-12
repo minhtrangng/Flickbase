@@ -1,8 +1,10 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+const Schema = mongoose.Schema;
 require('dotenv').config();
 // Importing the library for paginating
 const aggregatPaginate = require('mongoose-aggregate-paginate-v2');
+const mongooseAggregatePaginate = require('mongoose-aggregate-paginate-v2');
 
 const articleSchema =  mongoose.Schema({
     title: {
@@ -46,6 +48,14 @@ const articleSchema =  mongoose.Schema({
         enum: ['draft', 'public'],
         default: 'draft',
         index: true
+    },
+    // Category model
+    category: {
+        type: Schema.Types.ObjectId,
+        ref: 'Category',
+        required: true,
+        // Instead of write "N/A" directly, we can create a category with the name "N/A" and copy its ID here
+        default: '63d58540064b4367becd3e23'
     },
     date: {
         type: Date,

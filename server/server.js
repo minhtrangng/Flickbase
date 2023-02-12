@@ -1,6 +1,22 @@
+const cookieSession = require('cookie-session');
 const express = require('express');
+const cors = require('cors');
+
+require('./passport')
+
+const authRoute = require("./routes/index");
+
 const app = express();
 require('dotenv').config()
+
+app.use(cookieSession(
+    { 
+        name: "google-auth-session",
+        keys:["flickbase"],
+        // Valid in 1 day
+        maxAge: 24 * 60 * 60 * 100
+    }
+));
 
 const mongoose = require('mongoose');
 const bodyParser =  require('body-parser');
@@ -24,6 +40,13 @@ mongoose.connect(mongooseURI);
 const passport = require('passport');
 const { jwtStrategy } = require('./middleware/passport');
 
+// USING CORS TO REQUEST/RESPONSE EXCHANGE BETWEEN DIFFERENT ORIGIN
+app.use(cors({
+    origin: "http://localhost:3000",
+    methods: "GET, POST, PUT, DELETE",
+    credentials: true
+}));
+
 // JSON BODY PARSER
 app.use(bodyParser.json());
 
@@ -33,7 +56,9 @@ app.use(mongoSanitize());
 
 // VERIFY THE TOKEN
 app.use(passport.initialize());
+app.use(passport.session());
 passport.use('jwt', jwtStrategy);
+
 
 // ROUTES
 // Everytime the  route starts, it will be looking in the file "routes"

@@ -9,14 +9,15 @@ const allRights = {
 
 let grantsObject = {
     admin: {
-        testrole: {
-            'create:any': ['*'],
-            'read:any': ['*'],
-            'update:any': ['*'],
-            'delete:any': ['*'],
-        },
+        // testrole: {
+        //     'create:any': ['*'],
+        //     'read:any': ['*'],
+        //     'update:any': ['*'],
+        //     'delete:any': ['*'],
+        // },
         profile: allRights,
-        articles: allRights
+        articles: allRights,
+        categories: allRights
     },
     user: {
         // testrole: {

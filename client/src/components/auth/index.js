@@ -11,10 +11,14 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 
+import { GoogleLogin, GoogleOAuthProvider, googleLogout } from '@react-oauth/google';
+import jwt_decode from 'jwt-decode'; 
+
 import { registerUser } from '../../store/actions/users';
 import { signinUser } from '../../store/actions/users';
 
 import PreventSignIn from '../../hoc/preventSignIn';
+
 
 
 const Auth = () => {
@@ -52,6 +56,28 @@ const Auth = () => {
             dispatch(signinUser(values));
         }
     }
+
+    // GOOGLE CALLBACK
+    const googleSignIn = () => {
+        window.open("http://localhost:3001/api/auth/google", "_self")
+    }
+
+    // LOG IN WITH GOOGLE
+    // const googleLogIn = (credentialResponse) => {
+    //     const decoded_response = jwt_decode(credentialResponse);
+    //     console.log(decoded_response);
+    //     //return decoded_response;
+    // }
+    
+    // GOOGLE LOGOUT
+    // const ggLogout = () => {
+    //     document.location.href = "https://www.google.com/accounts/Logout?continue=https://appengine.google.com/_ah/logout?continue=http://localhost:3000/";
+    // }
+
+    // GOOGLE LOGIN
+    // const google = () => {
+    //     window.open("http://localhost:3000/auth/google", "_self")
+    // }
 
     // NOTIFICATION
     useEffect(() => {
@@ -115,10 +141,53 @@ const Auth = () => {
                         >
                         Want to {!register ? 'Register': 'Login'}
                         </Button>
+
+                        {/* <GoogleOAuthProvider clientId='298685441331-arqa1q8ccll3hd4idatv3tininfrdfq4.apps.googleusercontent.com'>
+                            <div className='mt-3'>
+                            <GoogleLogin
+                                onSuccess={credentialResponse => googleLogIn(credentialResponse)}
+                                onError={() => {
+                                    console.log('Login Failed');
+                                }}
+                                useOneTap
+                            />
+                            </div>
+                            
+                        </GoogleOAuthProvider>
+                        
+                        <div>
+                            <Button
+                                className='mt-3 g_id_signout'
+                                variant='outlined'
+                                color='secondary'
+                                onClick={() => ggLogout()}
+                            >
+                                Google log out
+                            </Button>
+                        </div> */}
+
+                        
+                        
+                        
                     </div>
                 </Box>
                 }
             </div>
+
+            <div className='auth_container'>
+                <Button 
+                    className='mt-3 loginButton'
+                    variant='contained'
+                    color='primary'
+                    type='submit'
+                    size='big'
+                    onClick={googleSignIn}
+                >
+                    Sign In with Google
+                </Button>
+            </div>
+
+            
 
         </PreventSignIn>
 

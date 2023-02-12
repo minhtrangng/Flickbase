@@ -3,7 +3,7 @@
 const { authService, emailService } = require("../services");
 const httpStatus = require('http-status');
 const { sign } = require("jsonwebtoken");
-
+const { OAuth2Client } = require('google-auth-library');
 
 
 
@@ -53,13 +53,58 @@ const authController = {
             next(err);
         }
     },
+
+    // SIGNIN WITH GOOGLE
+    // async googleSignIn(request, response, next){
+    //     try{
+    //         if(request.user){
+    //             console.log(request.user)
+    //             response.status(200).json({
+    //                 success: true,
+    //                 message: "successful",
+    //                 user: request.user,
+    //                 cookies: request.cookies
+    //             })
+                
+    //         }
+    //     }
+    //     catch(err) {
+    //         next(err)
+    //     }
+    // },
+
     // CHECK IF THE USER IS AUTHENTICATED
     async isauth(request, response, next){
         response.json(request.user);
     },
     // TEST THE ROLE
-    async testrole(request, responson, next){
-        responson.json({ok: 'yes'});
+    async testrole(request, response, next){
+        response.json({ok: 'yes'});
+    },
+
+    // LOGIN WITH GOOLE
+    async loginWithGoogle(request, response, next){
+        try{
+            const { token } = request.body;
+            const ticket = await client.verifyIdToken({
+                idToken: token,
+                audience: process.env.GOOGLE_CLIENT_ID
+            });
+            // Read the name and the email address from the ticket
+            const { name, email } = ticket.getPayload();
+            // Save the user information in the DB
+            const user = await authService.logInWithGoggle(name, email);
+            
+            // Cookie
+            response.cookie('x-accesss-token', token)
+            .status(httpStatus.CREATED).send({
+                user, 
+                token
+            }); 
+        }
+        catch(err) {
+            next(err)
+        }
     }
 }
 

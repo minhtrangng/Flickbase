@@ -31,5 +31,10 @@ router.route('/all')
 // Paginating, only when the user is an admin
 router.post('/admin/paginate', auth('readAny', 'articles'), articlesController.adminPaginate)
 
+///// Category
+router.route('/categories')
+.post(auth('createAny', 'categories'), articlesController.createCategory)
+.get(auth('readAny', 'categories'), articlesController.getAllCategories)
+
 
 module.exports = router;

@@ -17,7 +17,7 @@ const Article = () => {
 
     return (
         <>
-            { !article && article.current ? 
+            { !article || !article.current ? 
                 <Loader/>
 
                 :

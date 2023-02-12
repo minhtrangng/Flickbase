@@ -1,7 +1,6 @@
 Additional feature: 
 	1. Additional login option: Login with social media credentials
-	2. Upload and Download: 
-		- Download the articles (admin & user)
-		- Upload the articles (admin)
-	3. Import and export items (admin) 
+	2. Import and export items (admin): Import & export articles (as json file)
+		- If the id of the importing file is already exist => Discard
+		- Export all articles in a zip folder 
 	4. Passwort vergessen?

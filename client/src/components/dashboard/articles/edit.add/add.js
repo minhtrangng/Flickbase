@@ -1,5 +1,5 @@
 // libs
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useFormik, FieldArray, FormikProvider } from "formik";
 import { useNavigate } from "react-router-dom";
 
@@ -11,7 +11,7 @@ import WYSIWYG from "../../../../utils/form/wysiwyg";
 
 // redux
 import { useDispatch, useSelector } from "react-redux";
-import { addArticle } from "../../../../store/actions/articles";
+import { addArticle, getCategories } from "../../../../store/actions/articles";
 
 // MUI
 import TextField from '@mui/material/TextField'
@@ -28,10 +28,14 @@ import FormHelperText from '@mui/material/FormHelperText'
  
 import InputLabel from '@mui/material/InputLabel';
 import AddIcon from '@mui/icons-material/Add';
+import { selectFields } from "express-validator/src/select-fields";
 
 
 const AddArticles =() => {
     const [editorBlur, setEditorBlur] = useState(false);
+
+    const [uploadedFilename, setUploadedFilename] = useState("");
+    const [uploadedFileContent, setUploadedFileContent] = useState("");
 
     // Redux
     const articles = useSelector(state => state.articles);
@@ -65,11 +69,47 @@ const AddArticles =() => {
         setEditorBlur(true)
     }
 
+    useEffect(() => {
+        dispatch(getCategories({}))
+    }, [])
+
+    const handleFileUpload = (e) => {
+        const file = e.target.files[0]
+        const fileReader = new FileReader();
+        // const file = e.target.files[0]
+        fileReader.readAsText(file, "UTF-8");
+        fileReader.onload = (e) => {
+            console.log(file.name);
+            console.log(e.target.result)
+            setUploadedFilename(file.name)
+            setUploadedFileContent(e.target.result)
+            // console.log("e.target.result", e.target.result);
+            // const data = JSON.parse(e.target.result);
+            // console.log("JSON data", data);
+            // console.log("File name:" + uploadedFile.filename)
+            // console.log("File content: " + uploadedFile.fileContent)
+            
+        }
+        
+    }
+
     return (
         <>
             <AdminTitle title="Add New Articles"></AdminTitle>
             {/* ADD ARTICLES */}
             <form className="mt-3 article_form" onSubmit={formik.handleSubmit}>
+
+                <div className="form-group">
+                    <input type="file" onChange={handleFileUpload}/>
+                </div>
+
+                { uploadedFileContent && uploadedFilename ? 
+                    <div>
+                        <p>{uploadedFilename}</p>
+                        <p>{uploadedFileContent}</p>
+                    </div>
+                : null}
+
                 <div className="form-group">
                     <TextField
                         style={{width: '100%'}}
@@ -156,7 +196,7 @@ const AddArticles =() => {
                         {...errorHelper(formik, 'excerpt')}
                         multiline
                         rows={4}
-                    />
+                    />                    
                 </div>
 
                 <Divider className="mt-3 mb-3"/>
@@ -213,16 +253,47 @@ const AddArticles =() => {
 
                 <Divider className="mt-3 mb-3"/>
 
-                { articles.loading ? 
+                <FormControl fullWidth>
+                    <InputLabel>Select a Category</InputLabel>
+                    <Select
+                        name="category"
+                        label="Select a Category"
+                        {...formik.getFieldProps('category')}
+                        error= { formik.errors.category && formik.touched.category ? true: false}    
+                    >
+                        <MenuItem value=""><em>None</em></MenuItem>
+                        { articles.categories ?
+                            articles.categories.map(item => (
+                                <MenuItem key={item._id} value={item._id}>
+                                    {item.name}
+                                </MenuItem>
+                            ))
+                        : null}
+
+                    </Select>
+
+                    { formik.errors.category && formik.touched.category ?
+                        <FormHelperText error="true">
+                            { formik.errors.category }
+                        </FormHelperText>
+                        : null
+                    }
+                </FormControl>
+
+                <Divider className="mt-3 mb-3"/>
+
+                {/* { articles.loading ?
                     <Loader/>
-                : <Button
-                    variant="contained"
-                    color="primary"
-                    type="submit"
-                  >
-                    ADD ARTICLE
-                  </Button>
-                }    
+                : */}
+                    <Button
+                        variant='contained'
+                        color="primary"
+                        type="submit"
+                    >
+                        Add article
+                    </Button>
+                {/* } */}
+  
 
             
 

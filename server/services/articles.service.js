@@ -1,4 +1,5 @@
 const { Article } = require('../models/article');
+const { Category } = require('../models/category');
 const httpStatus = require('http-status');
 const { ApiError } = require('../middleware/apiError');
 
@@ -23,7 +24,7 @@ const addArticle = async(body) => {
 // Get article by ID (with token)
 const getArticle = async(_id, user) => {
     try{
-        const article = await Article.findById(_id);
+        const article = await Article.findById(_id).populate('category');
         if(!article){
             throw new ApiError(httpStatus.NOT_FOUND, 'Article not found');
         }
@@ -40,7 +41,10 @@ const getArticle = async(_id, user) => {
 // Get article by ID (without token)
 const getUsersArticle = async(_id) => {
     try{
-        const article = await Article.findById(_id);
+        // We add "populate" here to force the app to go to the DB, find the category with this ID and return the whole object with this ID,
+        // not only the ID itself.
+        // Why the objectID is returned? Because the declared type is 'objectID'
+        const article = await Article.findById(_id).populate('category');
         if(!article){
             throw new ApiError(httpStatus.NOT_FOUND, 'Article not found');
         }
@@ -96,6 +100,7 @@ const allArticles = async(request) => {
     try{
         const articles = await Article
         .find({status:'public'})
+        .populate('category')
         .sort([
             [sortBy,order]
         ])
@@ -118,6 +123,7 @@ const moreArticles = async(request) => {
     try{
         const articles = await Article
         .find({status:'public'})
+        .populate('category')
         .sort([
             [sortBy,order]
         ])
@@ -132,25 +138,77 @@ const moreArticles = async(request) => {
 
 
 const paginateAdminArticles = async(request) => {
+    // We want to also return the category but do not find "find()" as in other API call
+    // Use 'lookup' in this case
     try{
-        let aggregateQuery = Article.aggregate();
+        let aggQueryArray = [];
+        // let aggregateQuery = Article.aggregate();
         if(request.body.keywords && request.body.keywords != ''){
             const regEx = new RegExp(`${request.body.keywords}`, 'gi') // 'gi' is the flag
-            aggregateQuery = Article.aggregate([
-                { $match: {title: { $regex: regEx}}}
-            ])
+            // aggregateQuery = Article.aggregate([
+            //     { $match: {title: { $regex: regEx}}}
+            // ])
+            aggQueryArray.push(
+                { $match: { title:{ $regex:re}}}
+            )
         }
-        else{
-            aggregateQuery = Article.aggregate();
-        }
+        
+        // else{
+        //     aggregateQuery = Article.aggregate();
+        // }
+
+        aggQueryArray.push(
+            { $lookup:
+                {
+                    from:"categories",
+                    localField:"category",
+                    foreignField:"_id",
+                    as:"category"
+                }
+            },
+            { $unwind:"$category"}
+        )
+     
+
+        let aggQuery = Article.aggregate(aggQueryArray);
+
         const limit = request.body.limit ? request.body.limit : 5;
         const options = {
             page: request.body.page,
             limit,
             sort: {_id: 'desc'}
         }
-        const articles = await Article.aggregatePaginate(aggregateQuery, options);
+        const articles = await Article.aggregatePaginate(aggQuery, options);
         return articles;
+    }
+    catch(err){
+        throw err;
+    }
+}
+
+// ADD NEW CATEGORY
+const addCategory = async(request) => {
+    try{
+        // validation
+
+        const category = new Category({
+            ...request
+        })
+        await category.save();
+        return category;
+    }
+    catch(err){
+        throw err;
+    }
+}
+
+// GET ALL CATEGORIES
+const findAllCategories = async(request) => {
+    try{
+        // validation
+
+        const categories = await Category.find();
+        return categories;
     }
     catch(err){
         throw err;
@@ -166,5 +224,7 @@ module.exports = {
     deleteArticle,
     allArticles,
     moreArticles,
-    paginateAdminArticles
+    paginateAdminArticles,
+    addCategory,
+    findAllCategories
 }
