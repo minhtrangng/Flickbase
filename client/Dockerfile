@@ -22,10 +22,6 @@ FROM build-${REACT_APP_ENV} as build-final
 WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
 RUN echo "Build environment: ${REACT_APP_ENV}"
-COPY package.json ./
-COPY package-lock.json ./
-RUN npm ci
-COPY . ./
 RUN npm run build
 
 # production environment
