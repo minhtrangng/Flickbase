@@ -32,7 +32,11 @@ const { handleError, convertToApiError } = require('./middleware/apiError');
 // ROUTES
 const routes = require('./routes');
 
-const mongooseURI = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}?retryWrites=true&w=majority`;
+const mongooseURI = `mongodb://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}?authSource=admin`
+//+srv
+// ?retryWrites=true&w=majority`;
+
+//const mongooseURI = `mongodb://rootuser:rootpass@0.0.0.0:27017/Flickbase?authSource=admin`
 
 mongoose.connect(mongooseURI);
 
